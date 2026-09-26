@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 const categoryOptions = [
   { value: 'living-room', label: 'Living Room' },
   { value: 'bedroom', label: 'Bedroom' },
+  { value: 'kitchen', label: 'Kitchen' },
   { value: 'full-home', label: 'Full Home' },
   { value: 'furniture', label: 'Furniture' }
 ];

@@ -19,6 +19,7 @@ const filterCategories = [
   { id: 'all', label: 'All' },
   { id: 'living-room', label: 'Living Room' },
   { id: 'bedroom', label: 'Bedroom' },
+  { id: 'kitchen', label: 'Kitchen' },
   { id: 'full-home', label: 'Full Home' },
   { id: 'furniture', label: 'Furniture' }
 ];
@@ -177,15 +178,15 @@ const ManageProjects = () => {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Link
-                          to={`/project/${p._id}`}
+                        <a
+                          href={`${import.meta.env.VITE_SITE_URL || 'http://localhost:5173'}/project/${p._id}`}
                           target="_blank"
                           rel="noreferrer"
                           className="p-1.5 text-stone-500 hover:text-studio-charcoal border border-transparent hover:border-studio-border rounded transition-colors"
-                          title="View Live Page"
+                          title="View on Frontend Website"
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
-                        </Link>
+                        </a>
                         <Link
                           to={`/admin/projects/edit/${p._id}`}
                           className="p-1.5 text-blue-600 hover:text-blue-800 border border-blue-200 hover:bg-blue-50 rounded transition-colors"
