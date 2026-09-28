@@ -19,7 +19,6 @@ const filterCategories = [
   { id: 'all', label: 'All' },
   { id: 'living-room', label: 'Living Room' },
   { id: 'bedroom', label: 'Bedroom' },
-  { id: 'kitchen', label: 'Kitchen' },
   { id: 'full-home', label: 'Full Home' },
   { id: 'furniture', label: 'Furniture' }
 ];
@@ -75,13 +74,22 @@ const ManageProjects = () => {
       title="Manage Portfolio Projects"
       subtitle="Content Management System"
       actions={
-        <Link
-          to="/admin/projects/add"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-studio-charcoal text-white text-xs uppercase tracking-wider font-semibold hover:bg-studio-bronze transition-colors shadow-sm"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>Add New Project</span>
-        </Link>
+        <div className="flex items-center gap-2.5">
+          <Link
+            to="/admin/popular-items"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 border border-studio-border bg-white text-studio-charcoal text-xs uppercase tracking-wider font-semibold hover:border-studio-bronze transition-colors shadow-xs"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>Popular Items</span>
+          </Link>
+          <Link
+            to="/admin/projects/add"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-studio-charcoal text-white text-xs uppercase tracking-wider font-semibold hover:bg-studio-bronze transition-colors shadow-sm"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Add New Project</span>
+          </Link>
+        </div>
       }
     >
       {/* Filters & Search */}
@@ -178,15 +186,15 @@ const ManageProjects = () => {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <a
-                          href={`${import.meta.env.VITE_SITE_URL || 'http://localhost:5173'}/project/${p._id}`}
+                        <Link
+                          to={`/project/${p._id}`}
                           target="_blank"
                           rel="noreferrer"
                           className="p-1.5 text-stone-500 hover:text-studio-charcoal border border-transparent hover:border-studio-border rounded transition-colors"
-                          title="View on Frontend Website"
+                          title="View Live Page"
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
+                        </Link>
                         <Link
                           to={`/admin/projects/edit/${p._id}`}
                           className="p-1.5 text-blue-600 hover:text-blue-800 border border-blue-200 hover:bg-blue-50 rounded transition-colors"

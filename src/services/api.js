@@ -154,4 +154,34 @@ export const dashboardApi = {
   }
 };
 
+// Popular Items Services (Customer Try-on)
+export const popularItemApi = {
+  getAll: async (params = {}) => {
+    const response = await api.get('/popular-items/admin', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/popular-items/${id}`);
+    return response.data;
+  },
+  create: async (formData) => {
+    const isFormData = formData instanceof FormData;
+    const response = await api.post('/popular-items', formData, {
+      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
+    });
+    return response.data;
+  },
+  update: async (id, formData) => {
+    const isFormData = formData instanceof FormData;
+    const response = await api.put(`/popular-items/${id}`, formData, {
+      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
+    });
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/popular-items/${id}`);
+    return response.data;
+  }
+};
+
 export default api;

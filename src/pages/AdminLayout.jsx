@@ -32,7 +32,6 @@ const AdminLayout = ({ children, title, subtitle, actions }) => {
       { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
       { name: 'All Projects', path: '/admin/projects', icon: Layers },
       { name: 'Add Project', path: '/admin/projects/add', icon: PlusCircle },
-      { name: 'Testimonials', path: '/admin/testimonials', icon: MessageSquareQuote },
       { name: 'Enquiries', path: '/admin/enquiries', icon: Inbox },
       { name: 'Users & Roles', path: '/admin/users', icon: Users }
     ];
@@ -42,7 +41,6 @@ const AdminLayout = ({ children, title, subtitle, actions }) => {
       { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
       { name: 'All Projects', path: '/admin/projects', icon: Layers },
       { name: 'Add Project', path: '/admin/projects/add', icon: PlusCircle },
-      { name: 'Testimonials', path: '/admin/testimonials', icon: MessageSquareQuote },
       { name: 'Enquiries', path: '/admin/enquiries', icon: Inbox },
       { name: 'Manage Clients', path: '/admin/users', icon: Users }
     ];

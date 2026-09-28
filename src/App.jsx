@@ -12,6 +12,9 @@ import ManageTestimonials from './pages/ManageTestimonials';
 import ManageEnquiries from './pages/ManageEnquiries';
 import ManageUsers from './pages/ManageUsers';
 import ClientPortal from './pages/ClientPortal';
+import ManagePopularItems from './pages/ManagePopularItems';
+import AddPopularItem from './pages/AddPopularItem';
+import EditPopularItem from './pages/EditPopularItem';
 
 function App() {
   return (
@@ -130,6 +133,42 @@ function App() {
         <Route
           path="/testimonials"
           element={<Navigate to="/admin/testimonials" replace />}
+        />
+
+        {/* Popular Try-On Items (Superadmin & Admin) */}
+        <Route
+          path="/admin/popular-items"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <ManagePopularItems />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/popular-items"
+          element={<Navigate to="/admin/popular-items" replace />}
+        />
+
+        <Route
+          path="/admin/popular-items/add"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <AddPopularItem />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/popular-items/add"
+          element={<Navigate to="/admin/popular-items/add" replace />}
+        />
+
+        <Route
+          path="/admin/popular-items/edit/:id"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <EditPopularItem />
+            </ProtectedRoute>
+          }
         />
 
         <Route
