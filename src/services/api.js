@@ -184,4 +184,113 @@ export const popularItemApi = {
   }
 };
 
+// Room Designs (DECORE UR ROOM WITHOUT BUY IT)
+export const roomDesignApi = {
+  getAll: async (params = {}) => {
+    const response = await api.get('/room-designs', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/room-designs/${id}`);
+    return response.data;
+  },
+  create: async (formData) => {
+    const isFormData = formData instanceof FormData;
+    const response = await api.post('/room-designs', formData, {
+      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
+    });
+    return response.data;
+  },
+  update: async (id, formData) => {
+    const isFormData = formData instanceof FormData;
+    const response = await api.put(`/room-designs/${id}`, formData, {
+      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
+    });
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/room-designs/${id}`);
+    return response.data;
+  }
+};
+
+// Catalog Module Services (Admin / Superadmin)
+export const catalogApi = {
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('/catalog', { params });
+      return response.data;
+    } catch (err) {
+      try {
+        const localRes = await axios.get('http://localhost:5000/api/catalog', { params });
+        return localRes.data;
+      } catch (lErr) {
+        return [];
+      }
+    }
+  },
+  getById: async (id) => {
+    try {
+      const response = await api.get(`/catalog/${id}`);
+      return response.data;
+    } catch (err) {
+      try {
+        const localRes = await axios.get(`http://localhost:5000/api/catalog/${id}`);
+        return localRes.data;
+      } catch (lErr) {
+        return null;
+      }
+    }
+  },
+  create: async (formData) => {
+    const isFormData = formData instanceof FormData;
+    try {
+      const response = await api.post('/catalog', formData, {
+        headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
+      });
+      return response.data;
+    } catch (err) {
+      try {
+        const localRes = await axios.post('http://localhost:5000/api/catalog', formData, {
+          headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
+        });
+        return localRes.data;
+      } catch (lErr) {
+        throw new Error(err.message || 'Failed to save catalog item to server');
+      }
+    }
+  },
+  update: async (id, formData) => {
+    const isFormData = formData instanceof FormData;
+    try {
+      const response = await api.put(`/catalog/${id}`, formData, {
+        headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
+      });
+      return response.data;
+    } catch (err) {
+      try {
+        const localRes = await axios.put(`http://localhost:5000/api/catalog/${id}`, formData, {
+          headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
+        });
+        return localRes.data;
+      } catch (lErr) {
+        throw new Error(err.message || 'Failed to update catalog item');
+      }
+    }
+  },
+  delete: async (id) => {
+    try {
+      const response = await api.delete(`/catalog/${id}`);
+      return response.data;
+    } catch (err) {
+      try {
+        const localRes = await axios.delete(`http://localhost:5000/api/catalog/${id}`);
+        return localRes.data;
+      } catch (lErr) {
+        throw new Error(err.message || 'Failed to delete catalog item');
+      }
+    }
+  }
+};
+
 export default api;

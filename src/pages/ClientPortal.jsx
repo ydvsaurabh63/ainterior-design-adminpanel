@@ -175,8 +175,8 @@ const ClientPortal = () => {
                 BESPOKE ARCHITECTURAL PORTAL
               </span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-serif font-normal text-white tracking-tight">
-              Curating your sanctuary with <span className="text-amber-200 font-light italic">uncompromising precision</span>.
+            <h2 className="text-2xl sm:text-4xl font-serif font-semibold text-white tracking-tight">
+              Curating your sanctuary with <span className="text-amber-300 font-bold">uncompromising precision</span>.
             </h2>
             <p className="text-xs sm:text-sm text-stone-300 font-light leading-relaxed">
               Track spatial design milestones, inspect curated material moodboards, or test your real rooms with our AI Virtual Room Redesigner.

@@ -67,7 +67,7 @@ const AdminLogin = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <Logo size="md" className="justify-center mx-auto mb-4" />
-            <h1 className="font-serif text-2xl text-studio-charcoal mb-1">
+            <h1 className="font-serif text-2xl font-semibold tracking-tight text-studio-charcoal mb-1">
               Studio Portal Access
             </h1>
             <p className="text-xs uppercase tracking-widest text-studio-muted font-medium">

@@ -15,6 +15,15 @@ import ClientPortal from './pages/ClientPortal';
 import ManagePopularItems from './pages/ManagePopularItems';
 import AddPopularItem from './pages/AddPopularItem';
 import EditPopularItem from './pages/EditPopularItem';
+import ManageRoomDesigns from './pages/ManageRoomDesigns';
+import ManageCatalog from './pages/ManageCatalog';
+import AdminPlayground from './pages/AdminPlayground';
+import AdminUseCases from './pages/AdminUseCases';
+import AdminTemplates from './pages/AdminTemplates';
+import AdminCredits from './pages/AdminCredits';
+import AdminHelp from './pages/AdminHelp';
+import AdminProfile from './pages/AdminProfile';
+import AdminSettings from './pages/AdminSettings';
 
 function App() {
   return (
@@ -135,6 +144,34 @@ function App() {
           element={<Navigate to="/admin/testimonials" replace />}
         />
 
+        {/* Room Designs (DECORE UR ROOM WITHOUT BUY IT) */}
+        <Route
+          path="/admin/room-designs"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <ManageRoomDesigns />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/room-designs"
+          element={<Navigate to="/admin/room-designs" replace />}
+        />
+
+        {/* Catalog Management (5 Client Categories & Dynamic Objects) */}
+        <Route
+          path="/admin/catalog"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <ManageCatalog />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/catalog"
+          element={<Navigate to="/admin/catalog" replace />}
+        />
+
         {/* Popular Try-On Items (Superadmin & Admin) */}
         <Route
           path="/admin/popular-items"
@@ -182,6 +219,64 @@ function App() {
         <Route
           path="/enquiries"
           element={<Navigate to="/admin/enquiries" replace />}
+        />
+
+        {/* 10 Dashboard Tabs Routes */}
+        <Route
+          path="/admin/playground"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <AdminPlayground />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/use-cases"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <AdminUseCases />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/templates"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <AdminTemplates />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/credits"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <AdminCredits />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/help"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <AdminHelp />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/profile"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <AdminProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <AdminSettings />
+            </ProtectedRoute>
+          }
         />
 
         {/* Fallback */}

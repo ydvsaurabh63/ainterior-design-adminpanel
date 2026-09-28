@@ -30,8 +30,9 @@ export default {
         }
       },
       fontFamily: {
-        serif: ['"Cormorant Garamond"', 'Playfair Display', 'Georgia', 'serif'],
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['"Outfit"', '"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+        heading: ['"Outfit"', '"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
       },
       spacing: {
         '128': '32rem',

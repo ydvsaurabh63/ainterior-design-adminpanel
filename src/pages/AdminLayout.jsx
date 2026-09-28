@@ -1,58 +1,64 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import Logo from '../components/Logo';
 import {
   LayoutDashboard,
-  Layers,
-  PlusCircle,
-  MessageSquareQuote,
+  Palette,
+  Wand2,
+  Sparkles,
+  LayoutTemplate,
   Inbox,
+  Coins,
+  HelpCircle,
+  User,
+  Settings,
+  Layers,
+  Users,
   LogOut,
   ExternalLink,
-  Users,
   ShieldCheck,
   UserCheck,
-  Sparkles
+  Menu,
+  X,
+  ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const AdminLayout = ({ children, title, subtitle, actions }) => {
   const { admin, logout, role, isSuperAdmin, isClient } = useAuth();
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // Navigation tailored by role
-  let navItems = [];
+  // 10 Tabs Configuration tailored by Role
+  const mainNavItems = [
+    { id: 'overview', name: 'Overview', path: '/admin/dashboard', icon: LayoutDashboard },
+    { id: 'catalog', name: 'Catalog', path: '/admin/catalog', icon: Palette },
+    { id: 'playground', name: 'Playground', path: '/admin/playground', icon: Wand2, badge: 'AI Test' },
+    { id: 'use-cases', name: 'Use Cases', path: '/admin/use-cases', icon: Sparkles },
+    { id: 'templates', name: 'Templates', path: '/admin/templates', icon: LayoutTemplate }
+  ];
 
-  if (isClient) {
-    navItems = [
-      { name: 'My Portal', path: '/client/portal', icon: LayoutDashboard },
-      { name: 'Studio Portfolio', path: '/admin/projects', icon: Layers }
-    ];
-  } else if (isSuperAdmin) {
-    navItems = [
-      { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-      { name: 'All Projects', path: '/admin/projects', icon: Layers },
-      { name: 'Add Project', path: '/admin/projects/add', icon: PlusCircle },
-      { name: 'Enquiries', path: '/admin/enquiries', icon: Inbox },
-      { name: 'Users & Roles', path: '/admin/users', icon: Users }
-    ];
-  } else {
-    // Regular Admin
-    navItems = [
-      { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-      { name: 'All Projects', path: '/admin/projects', icon: Layers },
-      { name: 'Add Project', path: '/admin/projects/add', icon: PlusCircle },
-      { name: 'Enquiries', path: '/admin/enquiries', icon: Inbox },
-      { name: 'Manage Clients', path: '/admin/users', icon: Users }
-    ];
-  }
+  const managementNavItems = [
+    { id: 'enquiry', name: 'Enquiry', path: '/admin/enquiries', icon: Inbox },
+    { id: 'credits', name: 'Credits', path: '/admin/credits', icon: Coins, badge: 'Pool' },
+    { id: 'projects', name: 'Projects Portfolio', path: '/admin/projects', icon: Layers },
+    ...(isSuperAdmin || !isClient
+      ? [{ id: 'users', name: 'Users & Roles', path: '/admin/users', icon: Users }]
+      : [])
+  ];
 
-  // Role display badge configuration
+  const utilityNavItems = [
+    { id: 'help', name: 'Help', path: '/admin/help', icon: HelpCircle },
+    { id: 'profile', name: 'Profile', path: '/admin/profile', icon: User },
+    { id: 'settings', name: 'Settings', path: '/admin/settings', icon: Settings }
+  ];
+
+  // Role Badge Styling
   const getRoleBadge = () => {
     switch (role) {
       case 'superadmin':
         return {
-          label: 'Superadmin',
-          classes: 'bg-amber-950/80 text-amber-300 border-amber-600/50 shadow-inner'
+          label: 'Super Admin',
+          classes: 'bg-amber-500/20 text-amber-300 border-amber-500/40'
         };
       case 'client':
         return {
@@ -62,7 +68,7 @@ const AdminLayout = ({ children, title, subtitle, actions }) => {
       default:
         return {
           label: 'Studio Admin',
-          classes: 'bg-stone-800 text-studio-bronze border-stone-700'
+          classes: 'bg-studio-bronze/20 text-studio-bronze border-studio-bronze/40'
         };
     }
   };
@@ -70,103 +76,220 @@ const AdminLayout = ({ children, title, subtitle, actions }) => {
   const roleBadge = getRoleBadge();
 
   return (
-    <div className="min-h-screen bg-studio-bg flex flex-col pt-16">
-      {/* Top Admin Bar */}
-      <header className="fixed top-0 inset-x-0 z-40 bg-studio-charcoal text-white h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 border-b border-stone-800">
-        <div className="flex items-center gap-6">
-          <Link to={isClient ? "/client/portal" : "/admin/dashboard"} className="flex items-center gap-2.5">
-            <Logo size="sm" variant="dark" showTagline={false} />
-            <span
-              className={`hidden md:inline-block ml-2 text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded border ${roleBadge.classes}`}
-            >
+    <div className="min-h-screen bg-stone-100 flex text-stone-900 font-sans">
+      {/* Mobile Overlay */}
+      {mobileSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-stone-900/80 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* ========================================================
+          LEFT SIDEBAR NAVIGATION (Strict Left Side Position)
+          ======================================================== */}
+      <aside
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#141416] text-stone-300 flex flex-col justify-between border-r border-stone-800/90 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          mobileSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+        }`}
+      >
+        <div>
+          {/* Top Brand Header */}
+          <div className="h-16 px-5 border-b border-stone-800/80 flex items-center justify-between">
+            <Link to="/admin/dashboard" className="flex items-center gap-2">
+              <Logo size="sm" variant="dark" showTagline={false} />
+            </Link>
+            <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded border ${roleBadge.classes}`}>
               {roleBadge.label}
             </span>
-          </Link>
+          </div>
 
-          <a
-            href={import.meta.env.VITE_SITE_URL || 'http://localhost:5173'}
-            target="_blank"
-            rel="noreferrer"
-            className="hidden sm:inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-white transition-colors"
-          >
-            <span>View Live Website</span>
-            <ExternalLink className="w-3 h-3" />
-          </a>
+          {/* Navigation Groups */}
+          <div className="px-3 py-4 space-y-6 overflow-y-auto max-h-[calc(100vh-140px)] scrollbar-none">
+            {/* Group 1: MAIN DASHBOARD */}
+            <div>
+              <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">
+                MAIN DASHBOARD
+              </div>
+              <div className="space-y-1">
+                {mainNavItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setMobileSidebarOpen(false)}
+                      className={({ isActive }) =>
+                        `flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
+                          isActive
+                            ? 'bg-studio-bronze/15 text-studio-bronze border-l-4 border-studio-bronze font-bold shadow-xs'
+                            : 'text-stone-400 hover:text-stone-100 hover:bg-stone-800/60'
+                        }`
+                      }
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        <span>{item.name}</span>
+                      </div>
+                      {item.badge && (
+                        <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-studio-bronze/20 text-studio-bronze rounded border border-studio-bronze/30">
+                          {item.badge}
+                        </span>
+                      )}
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Group 2: MANAGEMENT & CRM */}
+            <div>
+              <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">
+                MANAGEMENT & CRM
+              </div>
+              <div className="space-y-1">
+                {managementNavItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setMobileSidebarOpen(false)}
+                      className={({ isActive }) =>
+                        `flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
+                          isActive
+                            ? 'bg-studio-bronze/15 text-studio-bronze border-l-4 border-studio-bronze font-bold shadow-xs'
+                            : 'text-stone-400 hover:text-stone-100 hover:bg-stone-800/60'
+                        }`
+                      }
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        <span>{item.name}</span>
+                      </div>
+                      {item.badge && (
+                        <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-emerald-950 text-emerald-400 rounded border border-emerald-800">
+                          {item.badge}
+                        </span>
+                      )}
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Group 3: ACCOUNT & SYSTEM */}
+            <div>
+              <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">
+                ACCOUNT & SYSTEM
+              </div>
+              <div className="space-y-1">
+                {utilityNavItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setMobileSidebarOpen(false)}
+                      className={({ isActive }) =>
+                        `flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
+                          isActive
+                            ? 'bg-studio-bronze/15 text-studio-bronze border-l-4 border-studio-bronze font-bold shadow-xs'
+                            : 'text-stone-400 hover:text-stone-100 hover:bg-stone-800/60'
+                        }`
+                      }
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        <span>{item.name}</span>
+                      </div>
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:flex flex-col text-right">
-            <div className="flex items-center gap-1.5 justify-end">
-              <span className="text-xs font-medium text-white">{admin?.name || 'User'}</span>
-              {isSuperAdmin && <ShieldCheck className="w-3.5 h-3.5 text-amber-400" title="Superadmin Privileges" />}
-              {!isSuperAdmin && !isClient && <UserCheck className="w-3.5 h-3.5 text-studio-bronze" />}
+        {/* Bottom Sidebar Footer */}
+        <div className="p-3 border-t border-stone-800/80 bg-stone-900/60 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 truncate">
+            <div className="w-8 h-8 rounded-full bg-stone-800 border border-stone-700 flex items-center justify-center text-xs font-bold text-studio-bronze">
+              {admin?.name?.substring(0, 1) || 'A'}
             </div>
-            <span className="text-[10px] text-stone-400">{admin?.email}</span>
+            <div className="truncate">
+              <div className="text-xs font-bold text-stone-200 truncate">{admin?.name || 'Admin'}</div>
+              <div className="text-[10px] text-stone-500 truncate">{admin?.email}</div>
+            </div>
           </div>
 
           <button
             onClick={() => logout()}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white text-xs uppercase tracking-wider transition-colors border border-stone-700"
+            className="p-1.5 text-stone-400 hover:text-rose-400 hover:bg-stone-800 rounded transition-colors"
+            title="Logout"
           >
-            <LogOut className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Logout</span>
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
-      </header>
+      </aside>
 
-      {/* Navigation Ribbon */}
-      <div className="bg-white border-b border-studio-border sticky top-16 z-30 shadow-sm overflow-x-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 sm:gap-6 py-2 min-w-max">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                end={
-                  item.path === '/admin/dashboard' ||
-                  item.path === '/admin/projects' ||
-                  item.path === '/client/portal'
-                }
-                className={({ isActive }) =>
-                  `inline-flex items-center gap-2 px-3 py-2 text-xs uppercase tracking-wider font-semibold transition-colors ${
-                    isActive
-                      ? 'text-studio-bronze border-b-2 border-studio-bronze font-bold'
-                      : 'text-studio-muted hover:text-studio-charcoal'
-                  }`
-                }
-              >
-                <Icon className="w-4 h-4" />
-                <span>{item.name}</span>
-              </NavLink>
-            );
-          })}
-        </div>
-      </div>
+      {/* ========================================================
+          MAIN CONTENT AREA (Right Side Layout offset by Left Sidebar)
+          ======================================================== */}
+      <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
+        {/* Top Header Bar */}
+        <header className="h-16 bg-white border-b border-stone-200 sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between shadow-2xs">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setMobileSidebarOpen(true)}
+              className="lg:hidden p-2 text-stone-600 hover:text-stone-900 border border-stone-200 rounded-lg"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
-        {/* Page Header */}
-        {(title || actions) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-studio-border">
-            <div>
-              {subtitle && (
-                <span className="text-[11px] uppercase tracking-[0.2em] text-studio-bronze font-bold block mb-1">
-                  {subtitle}
-                </span>
-              )}
-              {title && (
-                <h1 className="text-2xl sm:text-3xl font-serif text-studio-charcoal font-normal">
-                  {title}
-                </h1>
-              )}
+            <div className="flex items-center gap-2 text-xs text-stone-500 font-medium">
+              <span className="font-bold text-stone-900">Admin Studio</span>
+              <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
+              <span className="text-studio-bronze font-semibold">{title || 'Dashboard'}</span>
             </div>
-            {actions && <div className="flex items-center gap-3">{actions}</div>}
           </div>
-        )}
 
-        {children}
-      </main>
+          <div className="flex items-center gap-4">
+            <a
+              href={import.meta.env.VITE_SITE_URL || 'http://localhost:5173'}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-50 hover:bg-stone-100 border border-stone-200 text-stone-700 hover:text-stone-900 text-xs font-semibold rounded-lg transition-colors"
+            >
+              <span>View Live Website</span>
+              <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
+            </a>
+          </div>
+        </header>
+
+        {/* Page Content Body */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+          {(title || actions) && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-stone-200">
+              <div>
+                {subtitle && (
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-studio-bronze block mb-1">
+                    {subtitle}
+                  </span>
+                )}
+                {title && (
+                  <h1 className="text-xl sm:text-2xl font-extrabold text-stone-900 tracking-tight">
+                    {title}
+                  </h1>
+                )}
+              </div>
+              {actions && <div className="flex items-center gap-3">{actions}</div>}
+            </div>
+          )}
+
+          {children}
+        </main>
+      </div>
     </div>
   );
 };

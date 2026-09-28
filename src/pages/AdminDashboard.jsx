@@ -164,8 +164,8 @@ const AdminDashboard = () => {
                 {isSuperAdmin ? 'STUDIO DIRECTOR COMMAND' : 'ACTIVE STUDIO SHIFT'} • LIVE TELEMETRY
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-serif font-normal text-white">
-              Welcome back, <span className="text-amber-200 font-light italic">{admin?.name || 'Administrator'}</span>
+            <h2 className="text-2xl sm:text-3xl font-serif font-semibold text-white tracking-tight">
+              Welcome back, <span className="text-amber-300 font-bold">{admin?.name || 'Administrator'}</span>
             </h2>
             <p className="text-xs sm:text-sm text-stone-300 font-light leading-relaxed">
               {isSuperAdmin
