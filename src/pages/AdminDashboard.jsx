@@ -655,7 +655,7 @@ const AdminDashboard = () => {
                     Edit
                   </Link>
                   <a
-                    href={`${import.meta.env.VITE_SITE_URL || 'http://localhost:5173'}/projects/${proj._id}`}
+                    href={`${import.meta.env.VITE_SITE_URL || 'https://ainterior-design-frontend.vercel.app'}/projects/${proj._id}`}
                     target="_blank"
                     rel="noreferrer"
                     className="text-studio-muted hover:text-studio-charcoal flex items-center gap-1"

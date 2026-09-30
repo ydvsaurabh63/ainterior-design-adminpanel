@@ -51,7 +51,7 @@ const AdminLogin = () => {
         {/* Back link */}
         <div className="mb-6">
           <a
-            href={import.meta.env.VITE_SITE_URL || 'http://localhost:5173'}
+            href={import.meta.env.VITE_SITE_URL || 'https://ainterior-design-frontend.vercel.app'}
             className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-studio-muted hover:text-studio-charcoal transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />

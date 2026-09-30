@@ -256,7 +256,7 @@ const AdminLayout = ({ children, title, subtitle, actions }) => {
 
           <div className="flex items-center gap-4">
             <a
-              href={import.meta.env.VITE_SITE_URL || 'http://localhost:5173'}
+              href={import.meta.env.VITE_SITE_URL || 'https://ainterior-design-frontend.vercel.app'}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-50 hover:bg-stone-100 border border-stone-200 text-stone-700 hover:text-stone-900 text-xs font-semibold rounded-lg transition-colors"

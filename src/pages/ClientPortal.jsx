@@ -303,7 +303,7 @@ const ClientPortal = () => {
           </div>
         </div>
         <a
-          href={`${import.meta.env.VITE_SITE_URL || 'http://localhost:5173'}/ai-designer`}
+          href={`${import.meta.env.VITE_SITE_URL || 'https://ainterior-design-frontend.vercel.app'}/ai-designer`}
           target="_blank"
           rel="noreferrer"
           className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-3 bg-studio-bronze hover:bg-studio-bronze/90 text-white text-xs uppercase tracking-[0.2em] font-semibold transition-colors shadow-md"
@@ -438,7 +438,7 @@ const ClientPortal = () => {
                 <div className="p-3 bg-stone-50 border-t border-stone-100 flex items-center justify-between text-xs">
                   <span className="text-[11px] text-stone-500 font-mono">{item.location || 'Luxury Residence'}</span>
                   <a
-                    href={`${import.meta.env.VITE_SITE_URL || 'http://localhost:5173'}/projects/${item._id}`}
+                    href={`${import.meta.env.VITE_SITE_URL || 'https://ainterior-design-frontend.vercel.app'}/projects/${item._id}`}
                     target="_blank"
                     rel="noreferrer"
                     className="text-studio-bronze hover:underline font-semibold flex items-center gap-1"

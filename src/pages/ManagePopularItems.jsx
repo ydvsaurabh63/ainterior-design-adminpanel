@@ -86,7 +86,7 @@ const ManagePopularItems = () => {
       actions={
         <div className="flex items-center gap-3">
           <a
-            href={import.meta.env.VITE_SITE_URL || 'http://localhost:5173'}
+            href={import.meta.env.VITE_SITE_URL || 'https://ainterior-design-frontend.vercel.app'}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-studio-border bg-white text-studio-charcoal text-xs uppercase tracking-wider font-semibold hover:border-studio-bronze transition-colors shadow-xs"
