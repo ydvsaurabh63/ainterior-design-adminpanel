@@ -49,6 +49,9 @@ const ManageCatalog = () => {
   const [formImageFile, setFormImageFile] = useState(null);
   const [formImageUrl, setFormImageUrl] = useState('');
   const [imagePreview, setImagePreview] = useState('');
+  const [formStagedImageFile, setFormStagedImageFile] = useState(null);
+  const [formStagedImageUrl, setFormStagedImageUrl] = useState('');
+  const [stagedImagePreview, setStagedImagePreview] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch catalog items
@@ -82,13 +85,24 @@ const ManageCatalog = () => {
     }
   };
 
-  // Image Upload File Handler
+  // Image Upload File Handler (Product Image)
   const handleImageFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormImageFile(file);
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Staged Room Scene File Handler
+  const handleStagedImageFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormStagedImageFile(file);
+      const reader = new FileReader();
+      reader.onload = () => setStagedImagePreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
@@ -105,6 +119,9 @@ const ManageCatalog = () => {
     setFormImageFile(null);
     setFormImageUrl('');
     setImagePreview('');
+    setFormStagedImageFile(null);
+    setFormStagedImageUrl('');
+    setStagedImagePreview('');
     setShowAddModal(true);
   };
 
@@ -120,6 +137,9 @@ const ManageCatalog = () => {
     setFormImageFile(null);
     setFormImageUrl(item.imageUrl || '');
     setImagePreview(item.imageUrl || '');
+    setFormStagedImageFile(null);
+    setFormStagedImageUrl(item.stagedRoomImage || '');
+    setStagedImagePreview(item.stagedRoomImage || '');
     setShowEditModal(true);
   };
 
@@ -158,6 +178,12 @@ const ManageCatalog = () => {
         formData.append('imageUrl', formImageUrl.trim());
       }
 
+      if (formStagedImageFile) {
+        formData.append('stagedRoomImage', formStagedImageFile);
+      } else if (formStagedImageUrl.trim()) {
+        formData.append('stagedRoomImage', formStagedImageUrl.trim());
+      }
+
       await catalogApi.create(formData);
       toast.success(`Catalog item "${formName}" added successfully!`);
       setShowAddModal(false);
@@ -188,6 +214,12 @@ const ManageCatalog = () => {
         formData.append('image', formImageFile);
       } else if (formImageUrl.trim()) {
         formData.append('imageUrl', formImageUrl.trim());
+      }
+
+      if (formStagedImageFile) {
+        formData.append('stagedRoomImage', formStagedImageFile);
+      } else if (formStagedImageUrl.trim()) {
+        formData.append('stagedRoomImage', formStagedImageUrl.trim());
       }
 
       await catalogApi.update(currentItem._id, formData);
@@ -337,6 +369,11 @@ const ManageCatalog = () => {
                     <span className="absolute top-2 left-2 bg-stone-900/80 backdrop-blur-md text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
                       {item.objectCategory}
                     </span>
+                    {item.stagedRoomImage && (
+                      <span className="absolute bottom-2 right-2 bg-emerald-700/90 backdrop-blur-md text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
+                        <Sparkles className="w-2.5 h-2.5 text-amber-300" /> Staged Scene
+                      </span>
+                    )}
                   </div>
 
                   {/* Client Category badge */}
@@ -391,7 +428,7 @@ const ManageCatalog = () => {
           ======================================================== */}
       {(showAddModal || showEditModal) && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white border border-stone-200 max-w-lg w-full rounded-2xl p-6 shadow-2xl relative my-8 animate-fade-in">
+          <div className="bg-white border border-stone-200 max-w-2xl w-full rounded-2xl p-6 sm:p-7 shadow-2xl relative my-8 animate-fade-in max-h-[92vh] overflow-y-auto">
             <button
               onClick={() => {
                 setShowAddModal(false);
@@ -500,37 +537,75 @@ const ManageCatalog = () => {
                 />
               </div>
 
-              {/* Image Upload or URL */}
-              <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
-                  Product Image <span className="text-rose-500">*</span>
-                </label>
+              {/* Dual Image Uploads: Product Image & Furnished Room Scene */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3.5 bg-stone-50 border border-stone-200 rounded-xl">
+                {/* 1. Product Image */}
                 <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-stone-800">
+                      1. Product Image <span className="text-rose-500">*</span>
+                    </label>
+                    <span className="text-[10px] text-stone-500 font-semibold uppercase">Sidebar</span>
+                  </div>
+                  <p className="text-[10px] text-stone-500 leading-tight">
+                    Individual furniture/item photo shown on the left sidebar cards.
+                  </p>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageFileChange}
-                    className="w-full text-xs text-stone-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-stone-900 file:text-white hover:file:bg-stone-800"
+                    className="w-full text-xs text-stone-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-stone-900 file:text-white hover:file:bg-stone-800 cursor-pointer"
                   />
-                  <div className="text-[10px] text-stone-400 text-center font-medium">-- OR PASTE PUBLIC URL --</div>
                   <input
                     type="url"
-                    placeholder="https://images.unsplash.com/..."
+                    placeholder="Or paste image URL..."
                     value={formImageUrl}
                     onChange={(e) => {
                       setFormImageUrl(e.target.value);
                       setImagePreview(e.target.value);
                     }}
-                    className="w-full px-3 py-1.5 text-xs border border-stone-200 rounded-lg focus:outline-none focus:border-studio-bronze"
+                    className="w-full px-2.5 py-1.5 text-xs border border-stone-200 rounded-lg focus:outline-none focus:border-studio-bronze bg-white"
                   />
+                  {imagePreview && (
+                    <div className="relative aspect-video max-h-28 rounded-lg overflow-hidden border border-stone-200 bg-white">
+                      <img src={imagePreview} alt="Product Preview" className="w-full h-full object-contain" />
+                    </div>
+                  )}
                 </div>
 
-                {/* Preview Box */}
-                {imagePreview && (
-                  <div className="mt-3 relative aspect-[16/10] max-h-36 rounded-lg overflow-hidden border border-stone-200 bg-stone-50">
-                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                {/* 2. Furnished Room Staged Scene */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-stone-800">
+                      2. Furnished Room Scene
+                    </label>
+                    <span className="text-[10px] text-emerald-600 font-semibold uppercase">Right Canvas</span>
                   </div>
-                )}
+                  <p className="text-[10px] text-stone-500 leading-tight">
+                    The room with this item placed inside. Opens 100% fit on right canvas.
+                  </p>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleStagedImageFileChange}
+                    className="w-full text-xs text-stone-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-studio-bronze file:text-white hover:file:bg-studio-bronzeDark cursor-pointer"
+                  />
+                  <input
+                    type="url"
+                    placeholder="Or paste staged room URL..."
+                    value={formStagedImageUrl}
+                    onChange={(e) => {
+                      setFormStagedImageUrl(e.target.value);
+                      setStagedImagePreview(e.target.value);
+                    }}
+                    className="w-full px-2.5 py-1.5 text-xs border border-stone-200 rounded-lg focus:outline-none focus:border-studio-bronze bg-white"
+                  />
+                  {stagedImagePreview && (
+                    <div className="relative aspect-video max-h-28 rounded-lg overflow-hidden border border-emerald-300 bg-white shadow-xs">
+                      <img src={stagedImagePreview} alt="Staged Scene Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Modal Buttons */}
