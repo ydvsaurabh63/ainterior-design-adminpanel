@@ -249,8 +249,8 @@ const AdminLayout = ({ children, title, subtitle, actions }) => {
 
             <div className="flex items-center gap-2 text-xs text-stone-500 font-medium">
               <span className="font-bold text-stone-900">Admin Studio</span>
-              <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
-              <span className="text-studio-bronze font-semibold">{title || 'Dashboard'}</span>
+              <ChevronRight className="w-3.5 h-3.5 text-stone-400 hidden lg:inline" />
+              <span className="text-studio-bronze font-semibold hidden lg:inline-flex items-center">{title || 'Dashboard'}</span>
             </div>
           </div>
 

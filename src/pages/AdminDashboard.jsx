@@ -117,7 +117,7 @@ const AdminDashboard = () => {
     <AdminLayout
       title={
         isSuperAdmin ? (
-          <span className="flex items-center gap-2.5">
+          <span className="hidden lg:flex items-center gap-2.5">
             <span>Executive Studio Director Suite</span>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-widest bg-amber-500/15 text-amber-500 border border-amber-500/30 rounded-full font-mono">
               <ShieldCheck className="w-3 h-3" />
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
             </span>
           </span>
         ) : (
-          <span className="flex items-center gap-2.5">
+          <span className="hidden lg:flex items-center gap-2.5">
             <span>Studio Lead Architect & Operations Desk</span>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-widest bg-stone-100 text-stone-700 border border-stone-300 rounded-full font-mono">
               <Briefcase className="w-3 h-3 text-studio-bronze" />
@@ -134,7 +134,11 @@ const AdminDashboard = () => {
           </span>
         )
       }
-      subtitle={isSuperAdmin ? 'Master Architecture Governance & Revenue Overview' : 'Turnkey Project Execution & Client Consultations'}
+      subtitle={
+        <span className="hidden lg:inline">
+          {isSuperAdmin ? 'Master Architecture Governance & Revenue Overview' : 'Turnkey Project Execution & Client Consultations'}
+        </span>
+      }
       actions={
         <div className="flex items-center gap-2.5">
           <Link
