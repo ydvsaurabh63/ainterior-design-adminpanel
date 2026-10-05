@@ -15,13 +15,29 @@ export const AuthProvider = ({ children }) => {
 
       if (token && savedAdmin) {
         try {
-          setAdmin(JSON.parse(savedAdmin));
-          // Verify with server in background
-          const profile = await authApi.getProfile();
-          setAdmin(profile);
-          localStorage.setItem('interior_admin_user', JSON.stringify(profile));
+          const parsedAdmin = JSON.parse(savedAdmin);
+          setAdmin(parsedAdmin);
+          // UNBLOCK UI IMMEDIATELY: Render page instantly on reload
+          setLoading(false);
+
+          // Verify with server in background without blocking reload
+          authApi.getProfile()
+            .then((profile) => {
+              if (profile) {
+                setAdmin(profile);
+                localStorage.setItem('interior_admin_user', JSON.stringify(profile));
+              }
+            })
+            .catch((error) => {
+              console.warn('Background session validation note:', error.message);
+              const msg = (error?.message || '').toLowerCase();
+              if (msg.includes('jwt expired') || msg.includes('not authorized') || msg.includes('invalid token')) {
+                logout(false);
+              }
+            });
+          return;
         } catch (error) {
-          console.error('Session expired or invalid token:', error);
+          console.error('Session parse error:', error);
           logout(false);
         }
       }
