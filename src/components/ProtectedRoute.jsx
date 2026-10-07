@@ -17,8 +17,11 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   // If specific roles are required and current user is not in allowedRoles
   if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-    if (isClient) {
-      return <Navigate to="/client/portal" replace />;
+    if (role === 'superadmin') {
+      return <Navigate to="/superadmin/dashboard" replace />;
+    }
+    if (role === 'client') {
+      return <Navigate to="/client/dashboard" replace />;
     }
     return <Navigate to="/admin/dashboard" replace />;
   }

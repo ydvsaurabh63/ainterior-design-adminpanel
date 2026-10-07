@@ -51,6 +51,10 @@ export const userApi = {
     const response = await api.get('/auth/users', { params });
     return response.data;
   },
+  getAdminsList: async () => {
+    const response = await api.get('/auth/admins-list');
+    return response.data;
+  },
   create: async (userData) => {
     const response = await api.post('/auth/users', userData);
     return response.data;
@@ -110,8 +114,9 @@ export const enquiryApi = {
     const response = await api.get('/enquiries', { params });
     return response.data;
   },
-  updateStatus: async (id, status) => {
-    const response = await api.put(`/enquiries/${id}`, { status });
+  updateStatus: async (id, statusOrPayload) => {
+    const payload = typeof statusOrPayload === 'string' ? { status: statusOrPayload } : statusOrPayload;
+    const response = await api.put(`/enquiries/${id}`, payload);
     return response.data;
   },
   delete: async (id) => {

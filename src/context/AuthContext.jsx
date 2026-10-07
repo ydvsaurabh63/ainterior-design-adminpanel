@@ -56,7 +56,10 @@ export const AuthProvider = ({ children }) => {
         email: data.email,
         role: data.role || 'admin',
         status: data.status || 'active',
-        phone: data.phone || ''
+        phone: data.phone || '',
+        companyName: data.companyName || '',
+        categories: data.categories || [],
+        assignedCategory: data.assignedCategory || ''
       };
       localStorage.setItem('interior_admin_token', data.token);
       localStorage.setItem('interior_admin_user', JSON.stringify(userData));
@@ -78,6 +81,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateProfileState = (updatedData) => {
+    setAdmin((prev) => {
+      const merged = { ...prev, ...updatedData };
+      localStorage.setItem('interior_admin_user', JSON.stringify(merged));
+      return merged;
+    });
+  };
+
   const currentRole = admin?.role || 'admin';
   const isSuperAdmin = currentRole === 'superadmin';
   const isAdmin = currentRole === 'admin';
@@ -97,7 +108,8 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated: !!admin,
         loading,
         login,
-        logout
+        logout,
+        updateProfileState
       }}
     >
       {children}

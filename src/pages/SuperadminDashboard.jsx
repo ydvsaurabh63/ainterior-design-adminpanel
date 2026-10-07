@@ -2,61 +2,59 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Layers,
-  Sofa,
-  Bed,
-  Utensils,
-  Home,
-  Inbox,
-  PlusCircle,
-  ArrowRight,
-  Sparkles,
   ShieldCheck,
   Users,
   Briefcase,
-  Phone,
+  Layers,
+  Inbox,
+  ArrowRight,
+  PlusCircle,
   Mail,
-  MapPin,
+  Phone,
+  Sparkles,
+  CheckCircle2,
+  Clock,
   ExternalLink,
   ChevronRight,
-  TrendingUp,
-  Activity,
-  PenTool,
+  UserPlus,
+  MessageCircle,
   Building2,
-  Palette,
   Eye,
-  X,
-  MessageCircle
+  X
 } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { dashboardApi, enquiryApi } from '../services/api';
-import { CLIENT_CATEGORIES } from '../constants/catalogCategories';
+import { dashboardApi, enquiryApi, userApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
-const AdminDashboard = () => {
-  const { admin, isSuperAdmin } = useAuth();
+const SuperadminDashboard = () => {
+  const { admin } = useAuth();
   const [stats, setStats] = useState(null);
+  const [adminsList, setAdminsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [enquiryFilter, setEnquiryFilter] = useState('all');
   const [updatingEnquiryId, setUpdatingEnquiryId] = useState(null);
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
 
-  const fetchStats = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const data = await dashboardApi.getStats();
-      setStats(data);
+      const [statsData, adminsData] = await Promise.all([
+        dashboardApi.getStats(),
+        userApi.getAdminsList().catch(() => [])
+      ]);
+      setStats(statsData);
+      setAdminsList(Array.isArray(adminsData) ? adminsData : []);
     } catch (err) {
-      console.error('Failed to load dashboard stats:', err);
-      toast.error('Failed to load dashboard statistics');
+      console.error('Failed to load Superadmin metrics:', err);
+      toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchStats();
+    fetchDashboardData();
   }, []);
 
   const handleStatusChange = async (enquiryId, newStatus) => {
@@ -64,9 +62,9 @@ const AdminDashboard = () => {
     try {
       await enquiryApi.updateStatus(enquiryId, newStatus);
       toast.success(`Enquiry marked as ${newStatus}`);
-      await fetchStats();
+      await fetchDashboardData();
     } catch (err) {
-      toast.error(err.message || 'Failed to update status');
+      toast.error(err.message || 'Failed to update enquiry status');
     } finally {
       setUpdatingEnquiryId(null);
     }
@@ -74,9 +72,9 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <AdminLayout title="Admin Ops Dashboard" subtitle="Loading Operations">
+      <AdminLayout title="Superadmin Dashboard" subtitle="Loading Overview">
         <div className="py-24">
-          <LoadingSpinner text="Loading studio operations & project telemetry..." />
+          <LoadingSpinner text="Loading studio statistics & administration data..." />
         </div>
       </AdminLayout>
     );
@@ -95,79 +93,70 @@ const AdminDashboard = () => {
   const closedEnq = counts.closedEnquiries || 0;
   const conversionRate = totalEnq > 0 ? Math.round((closedEnq / totalEnq) * 100) : 0;
 
-  const clientSectorIcons = {
-    'furniture-manufacturers-dealers': Sofa,
-    'interior-design-companies-designers': PenTool,
-    'real-estate-developers-builders': Building2,
-    'home-decor-tiles-flooring': Layers,
-    'modular-kitchen-wardrobe-companies': Utensils
-  };
-
-  const clientSectors = CLIENT_CATEGORIES.slice(0, 5).map((cat) => ({
-    ...cat,
-    icon: clientSectorIcons[cat.id] || Layers
-  }));
-
   return (
     <AdminLayout
-      title="Admin Ops Dashboard"
-      subtitle="DAILY STUDIO OPERATIONS • PROJECTS & LEADS"
+      title="Superadmin Dashboard"
+      subtitle="MASTER OVERVIEW • ACCESS & OPERATIONS"
       actions={
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
-          {isSuperAdmin && (
-            <Link
-              to="/superadmin/dashboard"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-stone-300 text-stone-800 text-xs font-semibold rounded-lg hover:border-amber-400 hover:bg-stone-50 transition-colors shadow-xs"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
-              <span>Superadmin View</span>
-            </Link>
-          )}
+          <Link
+            to="/admin/users"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-stone-300 text-stone-800 text-xs font-semibold rounded-lg hover:border-stone-400 hover:bg-stone-50 transition-colors shadow-xs"
+          >
+            <UserPlus className="w-3.5 h-3.5 text-amber-600" />
+            <span>Manage Users</span>
+          </Link>
+          <Link
+            to="/admin/dashboard"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-stone-300 text-stone-800 text-xs font-semibold rounded-lg hover:border-stone-400 hover:bg-stone-50 transition-colors shadow-xs"
+          >
+            <Briefcase className="w-3.5 h-3.5 text-stone-600" />
+            <span>Admin Ops</span>
+          </Link>
           <Link
             to="/admin/projects/add"
             className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-stone-900 text-white text-xs font-semibold rounded-lg hover:bg-stone-800 transition-colors shadow-xs"
           >
             <PlusCircle className="w-3.5 h-3.5 text-amber-400" />
-            <span>Add New Project</span>
+            <span>Add Project</span>
           </Link>
         </div>
       }
     >
-      {/* 1. Clean Studio Welcome Card */}
+      {/* 1. Elegant Welcome Card */}
       <div className="bg-white border border-stone-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-7 mb-6 sm:mb-7 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-stone-100 border border-stone-200 text-stone-800 text-[10px] sm:text-[11px] font-bold mb-2.5">
-              <Briefcase className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-600" />
-              <span>{isSuperAdmin ? 'EXECUTIVE OPERATIONS VIEW' : 'STUDIO MANAGER DESK'}</span>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200/80 text-amber-800 text-[10px] sm:text-[11px] font-bold mb-2.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+              <span>SUPERADMIN ACCESS</span>
             </div>
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-stone-900 tracking-tight">
-              Welcome back, {admin?.name || 'Administrator'} 👋
+              Welcome back, {admin?.name || 'Director'} 👋
             </h2>
             <p className="text-xs sm:text-sm text-stone-500 mt-1 max-w-xl leading-relaxed">
-              Rozmarra ke operations, naye interior projects, try-on catalog items aur client consultations ko yahan se manage karein.
+              Yahan se aap apne saare Admins, Clients, Interior Portfolio Projects aur aayi hui Customer Enquiries ko ek nazar mein monitor kar sakte hain.
             </p>
           </div>
 
           <div className="flex items-center gap-3 self-stretch md:self-auto bg-stone-50 border border-stone-200/80 p-3 rounded-xl justify-between sm:justify-start">
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 shrink-0">
-              <Activity className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-lg bg-amber-100/70 border border-amber-200 flex items-center justify-center text-amber-800 shrink-0">
+              <Sparkles className="w-5 h-5 text-amber-600" />
             </div>
             <div>
-              <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-stone-500">Pipeline Health</div>
-              <div className="text-xs font-semibold text-stone-900 flex items-center gap-2 mt-0.5 flex-wrap">
-                <span className="text-amber-700 font-bold">{counts.newEnquiries || 0} New Leads</span>
-                <span className="text-stone-300">•</span>
-                <span className="text-emerald-700 font-bold">{conversionRate}% Conversion</span>
+              <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-stone-500">System Status</div>
+              <div className="text-xs font-semibold text-emerald-600 flex items-center gap-1.5 mt-0.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                All Services Active & Healthy
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 2. 4 Clean High-Impact KPI Cards */}
+      {/* 2. 4 Clean, High-Impact KPI Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-5 mb-6 sm:mb-7">
-        {/* Card 1: Enquiries */}
+        {/* Card 1: Admins */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -175,87 +164,31 @@ const AdminDashboard = () => {
           className="bg-white border border-stone-200 rounded-xl p-4 sm:p-5 hover:border-amber-400 hover:shadow-sm transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Client Inquiries</span>
+            <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Studio Admins</span>
             <div className="w-9 h-9 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
-              <Inbox className="w-4 h-4" />
+              <ShieldCheck className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-stone-900">{counts.totalEnquiries || 0}</span>
+            <span className="text-2xl sm:text-3xl font-extrabold text-stone-900">{counts.totalAdmins || 0}</span>
             <span className="text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-              {counts.newEnquiries || 0} New
+              Active Staff
             </span>
           </div>
           <Link
-            to="/admin/enquiries"
+            to="/admin/users"
             className="mt-4 pt-3 border-t border-stone-100 text-xs font-semibold text-amber-700 hover:text-amber-800 flex items-center justify-between group"
           >
-            <span>Review Leads</span>
+            <span>Manage Admins</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
 
-        {/* Card 2: Portfolio Projects */}
+        {/* Card 2: Clients */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, delay: 0.05 }}
-          className="bg-white border border-stone-200 rounded-xl p-4 sm:p-5 hover:border-stone-400 hover:shadow-sm transition-all"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Live Projects</span>
-            <div className="w-9 h-9 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-700">
-              <Layers className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-stone-900">{counts.totalProjects || 0}</span>
-            <span className="text-[11px] font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
-              Published
-            </span>
-          </div>
-          <Link
-            to="/admin/projects"
-            className="mt-4 pt-3 border-t border-stone-100 text-xs font-semibold text-stone-700 hover:text-stone-900 flex items-center justify-between group"
-          >
-            <span>Manage Portfolio</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </motion.div>
-
-        {/* Card 3: Try-On Items */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, delay: 0.1 }}
-          className="bg-white border border-stone-200 rounded-xl p-4 sm:p-5 hover:border-amber-400 hover:shadow-sm transition-all"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Try-On Items</span>
-            <div className="w-9 h-9 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
-              <Sparkles className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-stone-900">{counts.totalPopularItems || 0}</span>
-            <span className="text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-              Interactive
-            </span>
-          </div>
-          <Link
-            to="/admin/popular-items"
-            className="mt-4 pt-3 border-t border-stone-100 text-xs font-semibold text-amber-700 hover:text-amber-800 flex items-center justify-between group"
-          >
-            <span>Configure Showcase</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </motion.div>
-
-        {/* Card 4: Client Accounts */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, delay: 0.15 }}
           className="bg-white border border-stone-200 rounded-xl p-4 sm:p-5 hover:border-blue-400 hover:shadow-sm transition-all"
         >
           <div className="flex items-center justify-between">
@@ -274,175 +207,226 @@ const AdminDashboard = () => {
             to="/admin/users"
             className="mt-4 pt-3 border-t border-stone-100 text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center justify-between group"
           >
-            <span>View Clients Directory</span>
+            <span>View Client Directory</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </motion.div>
+
+        {/* Card 3: Projects */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.1 }}
+          className="bg-white border border-stone-200 rounded-xl p-4 sm:p-5 hover:border-stone-400 hover:shadow-sm transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Live Projects</span>
+            <div className="w-9 h-9 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-700">
+              <Layers className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-extrabold text-stone-900">{counts.totalProjects || 0}</span>
+            <span className="text-[11px] font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
+              Published
+            </span>
+          </div>
+          <Link
+            to="/admin/projects"
+            className="mt-4 pt-3 border-t border-stone-100 text-xs font-semibold text-stone-700 hover:text-stone-900 flex items-center justify-between group"
+          >
+            <span>Manage Projects</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </motion.div>
+
+        {/* Card 4: Enquiries */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.15 }}
+          className="bg-white border border-stone-200 rounded-xl p-4 sm:p-5 hover:border-emerald-400 hover:shadow-sm transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Inquiries & Leads</span>
+            <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+              <Inbox className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-extrabold text-stone-900">{counts.totalEnquiries || 0}</span>
+            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+              {counts.newEnquiries || 0} New
+            </span>
+          </div>
+          <Link
+            to="/admin/enquiries"
+            className="mt-4 pt-3 border-t border-stone-100 text-xs font-semibold text-emerald-700 hover:text-emerald-800 flex items-center justify-between group"
+          >
+            <span>Review Leads ({conversionRate}% Conv.)</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
       </div>
 
-      {/* 3. Middle Section: Project Distribution Matrix & Recent Projects */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 mb-6 sm:mb-7">
-        {/* Left Column: 5 Client Specialized Categories (5 cols) */}
-        <div className="lg:col-span-5 bg-white border border-stone-200 rounded-xl p-4 sm:p-5 lg:p-6 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-stone-100">
-              <div>
-                <span className="text-[10px] uppercase font-bold tracking-wider text-amber-700 block mb-0.5">
-                  5 Specialized Sectors
-                </span>
-                <h3 className="text-sm sm:text-base font-bold text-stone-900 flex items-center gap-2">
-                  <Palette className="w-4 h-4 text-amber-600" />
-                  Select Client Category
-                </h3>
-              </div>
-              <Link to="/admin/catalog" className="text-xs font-bold text-amber-700 hover:text-amber-800 flex items-center gap-0.5">
-                <span>View All</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            <div className="space-y-2 sm:space-y-2.5">
-              {clientSectors.map((sector) => {
-                const Icon = sector.icon;
-                return (
-                  <Link
-                    key={sector.id}
-                    to="/admin/catalog"
-                    className="p-2.5 sm:p-3 rounded-xl border border-stone-200/90 hover:border-amber-400 hover:bg-stone-50/80 transition-all flex items-center justify-between gap-2.5 sm:gap-3 group"
-                  >
-                    <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-stone-100 group-hover:bg-amber-100/70 border border-stone-200 group-hover:border-amber-300 flex items-center justify-center text-stone-700 group-hover:text-amber-900 shrink-0 transition-colors">
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-stone-900 truncate group-hover:text-amber-900 transition-colors">
-                          {sector.label}
-                        </h4>
-                        <p className="text-[10px] sm:text-[11px] text-stone-500 truncate mt-0.5">
-                          {sector.badge}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                      <span className="text-[10px] font-bold font-mono px-1.5 sm:px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200 group-hover:border-amber-300 group-hover:bg-amber-50 group-hover:text-amber-800 transition-colors whitespace-nowrap">
-                        {sector.objects.length} Objects
-                      </span>
-                      <ChevronRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all" />
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="mt-4 sm:mt-5 pt-3.5 sm:pt-4 border-t border-stone-100">
-            <Link
-              to="/admin/catalog"
-              className="w-full py-2.5 bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold rounded-lg text-center flex items-center justify-center gap-1.5 transition-colors shadow-xs"
-            >
-              <PlusCircle className="w-3.5 h-3.5 text-amber-400" />
-              <span>Manage Client Catalog & 5 Sectors</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Right Column: Featured Projects Cards (7 cols) */}
-        <div className="lg:col-span-7 bg-white border border-stone-200 rounded-xl p-4 sm:p-5 lg:p-6 shadow-xs">
-          <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-stone-100">
+      {/* 3. Middle Section: Active Admins List & Recent Projects Showcase */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 mb-6 sm:mb-7">
+        {/* Left Column: Active Admins (2/3 width) */}
+        <div className="lg:col-span-2 bg-white border border-stone-200 rounded-xl p-4 sm:p-5 lg:p-6 shadow-xs">
+          <div className="flex items-center justify-between pb-4 mb-4 border-b border-stone-100">
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-stone-900 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-600" />
-                Featured Portfolio Projects
+              <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-amber-600" />
+                Active Studio Administrators
               </h3>
               <p className="text-xs text-stone-500 mt-0.5">
-                Recently updated interior works live on website
+                Aapke system mein assigned Admins jo clients aur projects handle kar rahe hain
               </p>
             </div>
-            <Link to="/admin/projects" className="text-xs font-bold text-amber-700 hover:text-amber-800 shrink-0">
-              Manage ({counts.totalProjects || 0})
+            <Link
+              to="/admin/users"
+              className="text-xs font-bold text-amber-700 hover:text-amber-800 flex items-center gap-1"
+            >
+              <span>Manage All ({adminsList.length})</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          {recentProjects.length === 0 ? (
-            <div className="text-center py-12 text-stone-400 text-xs">
-              Abhi koi project add nahi hua hai
+          {adminsList.length === 0 ? (
+            <div className="text-center py-10 bg-stone-50 rounded-xl border border-dashed border-stone-200">
+              <Users className="w-8 h-8 text-stone-400 mx-auto mb-2" />
+              <p className="text-sm font-semibold text-stone-700">Abhi koi dusra Admin add nahi hai</p>
+              <p className="text-xs text-stone-500 mt-0.5">Aap Superadmin account se naya Admin create kar sakte hain</p>
+              <Link
+                to="/admin/users"
+                className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-900 text-white text-xs font-semibold rounded-lg hover:bg-stone-800"
+              >
+                <PlusCircle className="w-3.5 h-3.5 text-amber-400" />
+                <span>+ Add Studio Admin</span>
+              </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
-              {recentProjects.slice(0, 4).map((proj) => (
-                <div
-                  key={proj._id}
-                  className="border border-stone-200 rounded-lg p-2.5 hover:border-amber-300 transition-all bg-white flex flex-col justify-between group"
-                >
-                  <div className="relative h-36 sm:h-28 bg-stone-100 rounded-md overflow-hidden mb-2">
-                    <img
-                      src={proj.mainImage || proj.images?.[0]}
-                      alt={proj.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <span className="absolute top-2 left-2 bg-stone-900/80 backdrop-blur-xs text-white text-[9px] uppercase font-bold px-2 py-0.5 rounded">
-                      {proj.category}
-                    </span>
+            <div className="divide-y divide-stone-100">
+              {adminsList.slice(0, 5).map((adm) => (
+                <div key={adm._id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-stone-50/80 p-2 rounded-lg transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-amber-100/80 border border-amber-300 text-amber-900 font-bold flex items-center justify-center text-xs">
+                      {adm.name?.charAt(0)?.toUpperCase() || 'A'}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs sm:text-sm font-bold text-stone-900">{adm.name}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-stone-100 text-stone-700 rounded border border-stone-200">
+                          {adm.role}
+                        </span>
+                      </div>
+                      <div className="text-xs text-stone-500 flex items-center gap-3 mt-0.5">
+                        <span className="flex items-center gap-1"><Mail className="w-3 h-3 text-stone-400" /> {adm.email}</span>
+                        {adm.phone && <span className="flex items-center gap-1 hidden sm:inline-flex"><Phone className="w-3 h-3 text-stone-400" /> {adm.phone}</span>}
+                      </div>
+                    </div>
                   </div>
 
-                  <div>
-                    <h4 className="text-xs font-bold text-stone-900 truncate">{proj.title}</h4>
-                    <p className="text-[11px] text-stone-400 truncate mt-0.5">
-                      {proj.location || 'Studio Project'}
-                    </p>
-                  </div>
-
-                  <div className="mt-2.5 pt-2 border-t border-stone-100 flex items-center justify-between text-[11px]">
+                  <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
                     <Link
-                      to={`/admin/projects/edit/${proj._id}`}
-                      className="text-stone-700 hover:text-amber-700 font-semibold"
+                      to={`/admin/users?role=client&adminId=${adm._id}`}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-950 border border-stone-200 transition-colors"
+                      title={`View ${adm.name}'s assigned client studios`}
                     >
-                      Edit Project
+                      <Building2 className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Clients ({adm.clientCount || 0})</span>
+                      <ChevronRight className="w-3 h-3 text-stone-400" />
                     </Link>
-                    <a
-                      href={`${import.meta.env.VITE_SITE_URL || 'https://ainterior-design-frontend.vercel.app'}/projects/${proj._id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-stone-400 hover:text-stone-700 flex items-center gap-1"
-                    >
-                      <span>Live</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      Active
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </div>
+
+        {/* Right Column: Recent Projects Spotlight (1/3 width) */}
+        <div className="bg-white border border-stone-200 rounded-xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-stone-100">
+              <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
+                <Layers className="w-4 h-4 text-stone-700" />
+                Latest Projects
+              </h3>
+              <Link to="/admin/projects" className="text-xs font-bold text-stone-600 hover:text-stone-900">
+                View All
+              </Link>
+            </div>
+
+            {recentProjects.length === 0 ? (
+              <div className="text-center py-10 bg-stone-50 rounded-xl text-stone-500 text-xs">
+                Koi project upload nahi hai
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {recentProjects.slice(0, 3).map((proj) => (
+                  <div key={proj._id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-stone-50 transition-colors">
+                    {proj.mainImage || proj.images?.[0] || proj.galleryImages?.[0] ? (
+                      <img
+                        src={proj.mainImage || proj.images?.[0] || proj.galleryImages?.[0]}
+                        alt={proj.title}
+                        className="w-12 h-12 rounded-lg object-cover border border-stone-200 flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center flex-shrink-0">
+                        <Layers className="w-5 h-5 text-stone-400" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-xs font-bold text-stone-900 truncate">{proj.title}</h4>
+                      <p className="text-[11px] text-stone-500 capitalize">{proj.category || 'Interior Space'}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <Link
+            to="/admin/projects/add"
+            className="mt-4 w-full py-2 bg-stone-50 hover:bg-stone-100 border border-stone-200 text-stone-800 text-xs font-bold rounded-lg text-center flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <PlusCircle className="w-3.5 h-3.5 text-stone-700" />
+            <span>Upload New Portfolio Project</span>
+          </Link>
+        </div>
       </div>
 
-      {/* 4. Bottom Section: Turnkey Inquiries & Leads */}
+      {/* 4. Bottom Section: Customer Enquiries & Leads */}
       <div className="bg-white border border-stone-200 rounded-xl p-4 sm:p-5 lg:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-stone-100">
           <div>
             <h3 className="text-sm sm:text-base font-bold text-stone-900 flex items-center gap-2">
               <Inbox className="w-4 h-4 text-emerald-600" />
-              Customer Inquiries & Consultations
+              Recent Customer Inquiries & Leads
             </h3>
             <p className="text-xs text-stone-500 mt-0.5">
-              Customer leads ko status ke according update aur follow-up karein
+              Website se aane wali nayi client inquiries ko yahan se direct follow-up karein
             </p>
           </div>
 
+          {/* Filter Pills */}
           <div className="w-full sm:w-auto overflow-x-auto flex items-center gap-1 bg-stone-100 p-1 rounded-lg scrollbar-none">
-            {['all', 'New', 'Contacted', 'Closed'].map((status) => (
+            {['all', 'new', 'contacted', 'closed'].map((filter) => (
               <button
-                key={status}
+                key={filter}
                 type="button"
-                onClick={() => setEnquiryFilter(status)}
+                onClick={() => setEnquiryFilter(filter)}
                 className={`flex-1 sm:flex-initial text-center px-3 py-1 text-xs font-semibold rounded-md transition-all capitalize whitespace-nowrap cursor-pointer ${
-                  enquiryFilter === status
+                  enquiryFilter === filter
                     ? 'bg-white text-stone-900 shadow-xs'
                     : 'text-stone-500 hover:text-stone-900'
                 }`}
               >
-                {status}
+                {filter}
               </button>
             ))}
           </div>
@@ -470,10 +454,7 @@ const AdminDashboard = () => {
                     <tr key={enq._id} className="hover:bg-stone-50/60 transition-colors">
                       <td className="py-3 px-3">
                         <div className="font-bold text-stone-900">{enq.name}</div>
-                        <div className="text-[11px] text-stone-500 flex items-center gap-2 mt-0.5">
-                          {enq.phone && <span>{enq.phone}</span>}
-                          {enq.email && <span>• {enq.email}</span>}
-                        </div>
+                        <div className="text-[11px] text-stone-500">{enq.phone || enq.email}</div>
                       </td>
                       <td className="py-3 px-3">
                         <select
@@ -498,7 +479,7 @@ const AdminDashboard = () => {
                           type="button"
                           onClick={() => setSelectedEnquiry(enq)}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
-                          title="View Consultation Details"
+                          title="View Inquiry Details"
                         >
                           <Eye className="w-3.5 h-3.5 text-stone-600" />
                           <span>View</span>
@@ -560,7 +541,7 @@ const AdminDashboard = () => {
         )}
       </div>
 
-      {/* Consultation Details Modal with WhatsApp Link */}
+      {/* 5. Consultation & Inquiry Details Modal with WhatsApp Link */}
       {selectedEnquiry && (
         <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full border border-stone-200 shadow-2xl relative p-6 sm:p-7 space-y-5 animate-fade-in">
@@ -677,4 +658,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default SuperadminDashboard;

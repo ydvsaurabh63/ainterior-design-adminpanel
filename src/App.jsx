@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import AdminLogin from './pages/AdminLogin';
+import SuperadminDashboard from './pages/SuperadminDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ManageProjects from './pages/ManageProjects';
 import AddProject from './pages/AddProject';
@@ -24,6 +25,16 @@ import AdminCredits from './pages/AdminCredits';
 import AdminHelp from './pages/AdminHelp';
 import AdminProfile from './pages/AdminProfile';
 import AdminSettings from './pages/AdminSettings';
+import { useAuth } from './context/AuthContext';
+
+const RoleBasedRedirect = () => {
+  const { isAuthenticated, role, loading } = useAuth();
+  if (loading) return null;
+  if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
+  if (role === 'superadmin') return <Navigate to="/superadmin/dashboard" replace />;
+  if (role === 'client') return <Navigate to="/client/dashboard" replace />;
+  return <Navigate to="/admin/dashboard" replace />;
+};
 
 function App() {
   return (
@@ -50,21 +61,43 @@ function App() {
       />
 
       <Routes>
-        {/* Default route redirects to dashboard */}
-        <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+        {/* Default route dynamically redirects to user role dashboard */}
+        <Route path="/" element={<RoleBasedRedirect />} />
 
         {/* Login */}
-        <Route path="/login" element={<AdminLogin />} />
+        <Route path="/login" element={<Navigate to="/admin/login" replace />} />
         <Route path="/admin/login" element={<AdminLogin />} />
 
-        {/* Client Dedicated Portal */}
+        {/* Superadmin Dedicated Dashboard */}
         <Route
-          path="/client/portal"
+          path="/superadmin/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin']}>
+              <SuperadminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin"
+          element={<Navigate to="/superadmin/dashboard" replace />}
+        />
+
+        {/* Client Dedicated Dashboard */}
+        <Route
+          path="/client/dashboard"
           element={
             <ProtectedRoute allowedRoles={['client', 'superadmin', 'admin']}>
               <ClientPortal />
             </ProtectedRoute>
           }
+        />
+        <Route
+          path="/client/portal"
+          element={<Navigate to="/client/dashboard" replace />}
+        />
+        <Route
+          path="/client"
+          element={<Navigate to="/client/dashboard" replace />}
         />
 
         {/* Protected Dashboard (Superadmin & Admin) */}
@@ -81,11 +114,11 @@ function App() {
           element={<Navigate to="/admin/dashboard" replace />}
         />
 
-        {/* User & Role Management (Superadmin & Admin) */}
+        {/* User & Role Management (Superadmin, Admin & Client) */}
         <Route
           path="/admin/users"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <ManageUsers />
             </ProtectedRoute>
           }
@@ -112,7 +145,7 @@ function App() {
         <Route
           path="/admin/projects/add"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <AddProject />
             </ProtectedRoute>
           }
@@ -125,7 +158,7 @@ function App() {
         <Route
           path="/admin/projects/edit/:id"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <EditProject />
             </ProtectedRoute>
           }
@@ -134,7 +167,7 @@ function App() {
         <Route
           path="/admin/testimonials"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <ManageTestimonials />
             </ProtectedRoute>
           }
@@ -148,7 +181,7 @@ function App() {
         <Route
           path="/admin/room-designs"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <ManageRoomDesigns />
             </ProtectedRoute>
           }
@@ -162,7 +195,7 @@ function App() {
         <Route
           path="/admin/catalog"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <ManageCatalog />
             </ProtectedRoute>
           }
@@ -172,11 +205,11 @@ function App() {
           element={<Navigate to="/admin/catalog" replace />}
         />
 
-        {/* Popular Try-On Items (Superadmin & Admin) */}
+        {/* Popular Try-On Items (Superadmin, Admin & Client) */}
         <Route
           path="/admin/popular-items"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <ManagePopularItems />
             </ProtectedRoute>
           }
@@ -189,7 +222,7 @@ function App() {
         <Route
           path="/admin/popular-items/add"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <AddPopularItem />
             </ProtectedRoute>
           }
@@ -202,7 +235,7 @@ function App() {
         <Route
           path="/admin/popular-items/edit/:id"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <EditPopularItem />
             </ProtectedRoute>
           }
@@ -211,7 +244,7 @@ function App() {
         <Route
           path="/admin/enquiries"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <ManageEnquiries />
             </ProtectedRoute>
           }
@@ -225,7 +258,7 @@ function App() {
         <Route
           path="/admin/playground"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <AdminPlayground />
             </ProtectedRoute>
           }
@@ -233,7 +266,7 @@ function App() {
         <Route
           path="/admin/use-cases"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <AdminUseCases />
             </ProtectedRoute>
           }
@@ -241,7 +274,7 @@ function App() {
         <Route
           path="/admin/templates"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <AdminTemplates />
             </ProtectedRoute>
           }
@@ -249,7 +282,7 @@ function App() {
         <Route
           path="/admin/credits"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <AdminCredits />
             </ProtectedRoute>
           }
@@ -257,7 +290,7 @@ function App() {
         <Route
           path="/admin/help"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <AdminHelp />
             </ProtectedRoute>
           }
@@ -265,7 +298,7 @@ function App() {
         <Route
           path="/admin/profile"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <AdminProfile />
             </ProtectedRoute>
           }
@@ -273,14 +306,14 @@ function App() {
         <Route
           path="/admin/settings"
           element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+            <ProtectedRoute allowedRoles={['superadmin', 'admin', 'client']}>
               <AdminSettings />
             </ProtectedRoute>
           }
         />
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="*" element={<RoleBasedRedirect />} />
       </Routes>
     </div>
   );
