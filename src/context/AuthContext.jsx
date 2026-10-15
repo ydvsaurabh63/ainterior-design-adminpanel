@@ -47,9 +47,11 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, portalRole = null) => {
     try {
-      const data = await authApi.login({ email, password });
+      const payload = { email, password };
+      if (portalRole) payload.portalRole = portalRole;
+      const data = await authApi.login(payload);
       const userData = {
         _id: data._id,
         name: data.name,
@@ -89,6 +91,12 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  const switchSession = (userData, token) => {
+    localStorage.setItem('interior_admin_token', token);
+    localStorage.setItem('interior_admin_user', JSON.stringify(userData));
+    setAdmin(userData);
+  };
+
   const currentRole = admin?.role || 'admin';
   const isSuperAdmin = currentRole === 'superadmin';
   const isAdmin = currentRole === 'admin';
@@ -109,7 +117,8 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         logout,
-        updateProfileState
+        updateProfileState,
+        switchSession
       }}
     >
       {children}

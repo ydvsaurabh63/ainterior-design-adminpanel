@@ -17,6 +17,8 @@ import {
   LogOut,
   ExternalLink,
   ShieldCheck,
+  Shield,
+  Building2,
   UserCheck,
   Menu,
   X,
@@ -34,22 +36,27 @@ const AdminLayout = ({ children, title, subtitle, actions }) => {
     return '/admin/dashboard';
   };
 
-  // 10 Tabs Configuration tailored by Role
+  // Dedicated Navigation tailored by Role
   const mainNavItems = [
     ...(isSuperAdmin
       ? [
           {
             id: 'superadmin-overview',
-            name: 'Superadmin Dashboard',
+            name: 'Overview',
             path: '/superadmin/dashboard',
-            icon: ShieldCheck,
-            badge: 'Master'
+            icon: ShieldCheck
           },
           {
-            id: 'admin-overview',
-            name: 'Admin Ops Dashboard',
-            path: '/admin/dashboard',
-            icon: LayoutDashboard
+            id: 'admin-management',
+            name: 'Admin Management',
+            path: '/superadmin/dashboard/admin-management',
+            icon: Shield
+          },
+          {
+            id: 'client-management',
+            name: 'Client Management',
+            path: '/superadmin/dashboard/client-management',
+            icon: Users
           }
         ]
       : [
@@ -58,7 +65,17 @@ const AdminLayout = ({ children, title, subtitle, actions }) => {
             name: isClient ? 'Client Dashboard' : 'Admin Dashboard',
             path: isClient ? '/client/dashboard' : '/admin/dashboard',
             icon: LayoutDashboard
-          }
+          },
+          ...(!isClient
+            ? [
+                {
+                  id: 'client-management',
+                  name: 'Client Management',
+                  path: '/superadmin/dashboard/client-management',
+                  icon: Users
+                }
+              ]
+            : [])
         ]),
     { id: 'catalog', name: 'Catalog', path: '/admin/catalog', icon: Palette },
     { id: 'playground', name: 'Playground', path: '/admin/playground', icon: Wand2, badge: 'AI Test' },
@@ -75,11 +92,9 @@ const AdminLayout = ({ children, title, subtitle, actions }) => {
     },
     { id: 'credits', name: 'Credits', path: '/admin/credits', icon: Coins, badge: 'Pool' },
     { id: 'projects', name: 'Projects Portfolio', path: '/admin/projects', icon: Layers },
-    ...(isSuperAdmin
-      ? [{ id: 'users', name: 'Hierarchy & Users', path: '/admin/users', icon: Users }]
-      : !isClient
-      ? [{ id: 'users', name: 'My Clients Directory', path: '/admin/users', icon: Users }]
-      : [{ id: 'users', name: 'My Category Users', path: '/admin/users', icon: Users }])
+    ...(isClient
+      ? [{ id: 'users', name: 'My Category Users', path: '/admin/users', icon: Users }]
+      : [])
   ];
 
   const utilityNavItems = [

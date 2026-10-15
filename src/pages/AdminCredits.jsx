@@ -14,7 +14,6 @@ const AdminCredits = () => {
   return (
     <AdminLayout
       title="AI Credits & Token Allocation"
-      subtitle="TAB 07 // GENERATION BALANCE & SYSTEM LIMITS"
       actions={
         <button
           onClick={() => handleAddCredits(500)}

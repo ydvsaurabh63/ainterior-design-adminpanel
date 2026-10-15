@@ -12,7 +12,13 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    let loginTarget = '/admin/login';
+    if (location.pathname.startsWith('/superadmin')) {
+      loginTarget = '/superadmin/login';
+    } else if (location.pathname.startsWith('/client')) {
+      loginTarget = '/client/login';
+    }
+    return <Navigate to={loginTarget} state={{ from: location }} replace />;
   }
 
   // If specific roles are required and current user is not in allowedRoles

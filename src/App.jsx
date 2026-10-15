@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import AdminLogin from './pages/AdminLogin';
+import ForgotPassword from './pages/ForgotPassword';
 import SuperadminDashboard from './pages/SuperadminDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ManageProjects from './pages/ManageProjects';
@@ -12,6 +13,8 @@ import EditProject from './pages/EditProject';
 import ManageTestimonials from './pages/ManageTestimonials';
 import ManageEnquiries from './pages/ManageEnquiries';
 import ManageUsers from './pages/ManageUsers';
+import AdminManagement from './pages/AdminManagement';
+import ClientManagement from './pages/ClientManagement';
 import ClientPortal from './pages/ClientPortal';
 import ManagePopularItems from './pages/ManagePopularItems';
 import AddPopularItem from './pages/AddPopularItem';
@@ -64,9 +67,12 @@ function App() {
         {/* Default route dynamically redirects to user role dashboard */}
         <Route path="/" element={<RoleBasedRedirect />} />
 
-        {/* Login */}
+        {/* Dedicated Portal Logins */}
         <Route path="/login" element={<Navigate to="/admin/login" replace />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/login" element={<AdminLogin portal="admin" />} />
+        <Route path="/superadmin/login" element={<AdminLogin portal="superadmin" />} />
+        <Route path="/client/login" element={<AdminLogin portal="client" />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Superadmin Dedicated Dashboard */}
         <Route
@@ -81,6 +87,30 @@ function App() {
           path="/superadmin"
           element={<Navigate to="/superadmin/dashboard" replace />}
         />
+
+        {/* Dedicated Admin Management (Superadmin) */}
+        <Route
+          path="/superadmin/dashboard/admin-management"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin']}>
+              <AdminManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/superadmin/admins" element={<Navigate to="/superadmin/dashboard/admin-management" replace />} />
+        <Route path="/admin/admins" element={<Navigate to="/superadmin/dashboard/admin-management" replace />} />
+
+        {/* Dedicated Client Management (Superadmin & Admin) */}
+        <Route
+          path="/superadmin/dashboard/client-management"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+              <ClientManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/superadmin/clients" element={<Navigate to="/superadmin/dashboard/client-management" replace />} />
+        <Route path="/admin/clients" element={<Navigate to="/superadmin/dashboard/client-management" replace />} />
 
         {/* Client Dedicated Dashboard */}
         <Route

@@ -33,7 +33,6 @@ const AdminUseCases = () => {
   return (
     <AdminLayout
       title="Use Cases & Transformation Scenarios"
-      subtitle="TAB 04 // SHOWCASE SCENARIOS"
       actions={
         <button className="px-4 py-2 bg-studio-bronze hover:bg-studio-bronzeDark text-white text-xs font-bold uppercase tracking-wider rounded-lg flex items-center gap-2 shadow-xs transition-colors">
           <Plus className="w-4 h-4" /> Add New Use Case

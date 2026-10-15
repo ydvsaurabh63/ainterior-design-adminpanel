@@ -256,7 +256,6 @@ const ManageCatalog = () => {
   return (
     <AdminLayout
       title="Catalog Management"
-      subtitle="TAB 02 // PRODUCTS & OBJECTS DIRECTORY"
       actions={
         <button
           onClick={openAddModal}

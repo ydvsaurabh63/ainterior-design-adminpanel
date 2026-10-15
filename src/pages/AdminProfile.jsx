@@ -66,6 +66,9 @@ const AdminProfile = () => {
         companyName: profileData.companyName.trim(),
         phone: profileData.phone.trim()
       };
+      if (isSuperAdmin && profileData.email?.trim()) {
+        payload.email = profileData.email.trim();
+      }
 
       if (admin?._id) {
         const updated = await userApi.update(admin._id, payload);
@@ -236,18 +239,29 @@ const AdminProfile = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-stone-800 mb-1">
-                    Email Address
+                    Email Address {isSuperAdmin ? '*' : ''}
                   </label>
                   <input
                     type="email"
-                    disabled
+                    disabled={!isSuperAdmin}
                     value={profileData.email}
-                    className="w-full px-3 py-2 text-xs bg-stone-100 border border-stone-200 rounded-lg text-stone-500 cursor-not-allowed"
-                    title="Email is fixed for account identification"
+                    onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                    className={`w-full px-3 py-2 text-xs border border-stone-200 rounded-lg ${
+                      isSuperAdmin
+                        ? 'bg-stone-50 focus:outline-none focus:border-amber-400 text-stone-900'
+                        : 'bg-stone-100 text-stone-500 cursor-not-allowed'
+                    }`}
+                    title={isSuperAdmin ? 'Superadmin master email' : 'Email is fixed for account identification'}
                   />
-                  <span className="text-[10px] text-stone-400 mt-0.5 block">
-                    Account email is locked for security.
-                  </span>
+                  {!isSuperAdmin ? (
+                    <span className="text-[10px] text-stone-400 mt-0.5 block">
+                      Account email is locked for security.
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-amber-700 mt-0.5 block font-medium">
+                      Superadmin can change master login email.
+                    </span>
+                  )}
                 </div>
 
                 <div>

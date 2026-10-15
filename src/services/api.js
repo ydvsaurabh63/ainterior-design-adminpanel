@@ -42,6 +42,18 @@ export const authApi = {
   getProfile: async () => {
     const response = await api.get('/auth/me');
     return response.data;
+  },
+  forgotPassword: async (email) => {
+    const response = await api.post('/auth/forgot-password', { email });
+    return response.data;
+  },
+  verifyOtp: async (email, otp) => {
+    const response = await api.post('/auth/verify-otp', { email, otp });
+    return response.data;
+  },
+  resetPassword: async (email, otp, newPassword) => {
+    const response = await api.post('/auth/reset-password', { email, otp, newPassword });
+    return response.data;
   }
 };
 
@@ -65,6 +77,10 @@ export const userApi = {
   },
   delete: async (id) => {
     const response = await api.delete(`/auth/users/${id}`);
+    return response.data;
+  },
+  impersonate: async (id) => {
+    const response = await api.post(`/auth/impersonate/${id}`);
     return response.data;
   },
   getClientOverview: async () => {
